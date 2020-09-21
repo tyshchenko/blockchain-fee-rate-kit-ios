@@ -1,22 +1,18 @@
 import RxSwift
 
-class InfuraProvider {
+class InfuraApiProvider {
     private let networkManager: NetworkManager
     private let url: String
     private var basicAuth: (user: String, password: String)?
 
-    init(networkManager: NetworkManager, config: FeeProviderConfig) {
+    init(networkManager: NetworkManager, projectId: String, projectSecret: String? = nil) {
         self.networkManager = networkManager
 
-        url = "https://mainnet.infura.io/v3/\(config.infuraProjectId)"
-        basicAuth = config.infuraProjectSecret.map { (user: "", password: $0) }
+        url = "https://mainnet.infura.io/v3/\(projectId)"
+        basicAuth = projectSecret.map { (user: "", password: $0) }
     }
 
-}
-
-extension InfuraProvider: IFeeRateProvider {
-
-    func getFeeRates() -> Single<FeeRate> {
+    func ethereumRateSingle() -> Single<FeeRate> {
         let parameters: [String: Any] = [
             "id": "1",
             "jsonrpc": "2.0",

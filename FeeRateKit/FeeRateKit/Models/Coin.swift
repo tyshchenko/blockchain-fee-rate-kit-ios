@@ -1,3 +1,5 @@
+import GRDB
+
 enum Coin: String, CaseIterable {
     case bitcoin = "BTC"
     case bitcoinCash = "BCH"
@@ -6,49 +8,10 @@ enum Coin: String, CaseIterable {
 
     var defaultFeeRate: FeeRate {
         switch self {
-        case .bitcoin:
-            return FeeRate(
-                coin: self,
-                lowPriority: 20,
-                mediumPriority: 40,
-                highPriority: 80,
-                lowPriorityDuration: 1440 * 60,
-                mediumPriorityDuration: 120 * 60,
-                highPriorityDuration: 30 * 60,
-                date: Date()
-            )
-        case .bitcoinCash:
-            return FeeRate(
-                    coin: self,
-                    lowPriority: 1,
-                    mediumPriority: 3,
-                    highPriority: 5,
-                    lowPriorityDuration: 240 * 60,
-                    mediumPriorityDuration: 120 * 60,
-                    highPriorityDuration: 30 * 60,
-                    date: Date()
-            )
-        case .dash:
-            return FeeRate(
-                    coin: self,
-                    lowPriority: 1,
-                    mediumPriority: 1,
-                    highPriority: 2,
-                    lowPriorityDuration: 1,
-                    mediumPriorityDuration: 1,
-                    highPriorityDuration: 1,
-                    date: Date())
-        case .ethereum:
-            return FeeRate(
-                    coin: self,
-                    lowPriority: 13_000_000_000,
-                    mediumPriority: 16_000_000_000,
-                    highPriority: 19_000_000_000,
-                    lowPriorityDuration: 30 * 60,
-                    mediumPriorityDuration: 5 * 60,
-                    highPriorityDuration: 2 * 60,
-                    date: Date()
-            )
+        case .bitcoin:      return FeeRate(coin: self, lowPriority: 20, mediumPriority: 40, highPriority: 80, lowPriorityDuration: 86400, mediumPriorityDuration: 7200, highPriorityDuration: 1800, date: Date(timeIntervalSince1970: 1543211299))
+        case .bitcoinCash:  return FeeRate(coin: self, lowPriority: 1, mediumPriority: 3, highPriority: 5, lowPriorityDuration: 14400, mediumPriorityDuration: 7200, highPriorityDuration: 1800, date: Date(timeIntervalSince1970: 1543211299))
+        case .dash:         return FeeRate(coin: self, lowPriority: 1, mediumPriority: 1, highPriority: 2, lowPriorityDuration: 0, mediumPriorityDuration: 0, highPriorityDuration: 0, date: Date(timeIntervalSince1970: 1557224025))
+        case .ethereum:     return FeeRate(coin: self, lowPriority: 13_000_000_000, mediumPriority: 16_000_000_000, highPriority: 19_000_000_000, lowPriorityDuration: 1800, mediumPriorityDuration: 300, highPriorityDuration: 120, date: Date(timeIntervalSince1970: 1543211299))
         }
     }
 
@@ -70,13 +33,20 @@ enum Coin: String, CaseIterable {
         }
     }
 
-    var expirationTimeInterval: TimeInterval {
-        switch self {
-        case .bitcoin:      return 6 * 60
-        case .bitcoinCash:  return 0
-        case .dash:         return 0
-        case .ethereum:     return 3 * 60
+}
+
+extension Coin: DatabaseValueConvertible {
+
+    public var databaseValue: DatabaseValue {
+        return self.rawValue.databaseValue
+    }
+
+    public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Coin? {
+        if case let DatabaseValue.Storage.string(value) = dbValue.storage {
+            return Coin(rawValue: value)
         }
+
+        return nil
     }
 
 }

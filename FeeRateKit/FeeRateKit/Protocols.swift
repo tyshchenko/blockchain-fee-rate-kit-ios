@@ -1,10 +1,19 @@
 import RxSwift
 
-protocol IStorage {
-    func feeRate(coin: Coin) -> FeeRate?
-    func save(feeRate: FeeRate)
+public protocol IFeeRateKitDelegate: AnyObject {
+    func didRefreshFeeRates()
 }
 
-protocol IFeeRateProvider {
-    func getFeeRates() -> Single<FeeRate>
+protocol IStorage {
+    func feeRate(coin: Coin) -> FeeRate?
+    func save(feeRates: [FeeRate])
+}
+
+protocol ISyncer {
+    var delegate: ISyncerDelegate? { get set }
+    func sync()
+}
+
+protocol ISyncerDelegate: AnyObject {
+    func didSync()
 }

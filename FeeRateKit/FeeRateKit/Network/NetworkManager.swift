@@ -12,7 +12,7 @@ class NetworkManager {
         let single = Single<DataResponse<Any>>.create { observer in
             let requestReference = Alamofire.request(request)
                     .validate()
-                    .responseJSON(completionHandler: { response in
+                    .responseJSON(queue: DispatchQueue.global(qos: .background), completionHandler: { response in
                         observer(.success(response))
                     })
 
@@ -102,6 +102,17 @@ extension NetworkManager {
             return try encoding.encode(urlRequest, with: parameters)
         }
 
+    }
+
+}
+
+extension NetworkManager {
+
+    enum NetworkError: Error {
+        case invalidUrl
+        case mappingError
+        case noConnection
+        case serverError(status: Int, data: Any?)
     }
 
 }
