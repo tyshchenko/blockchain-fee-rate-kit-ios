@@ -11,6 +11,7 @@ project 'Demo/Demo'
 def common_pods
   pod 'RxSwift', '~> 5.0'
   pod 'Alamofire', '~> 4.0'
+  pod 'GRDB.swift', '~> 4.0'
 end
 
 target :FeeRateKit do
